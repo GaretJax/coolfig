@@ -5,7 +5,12 @@ python:
   - "3.3"
   - "3.4"
 
+env:
+  - USE_SQLALCHEMY=1
+  - USE_SQLALCHEMY=0
+
 install:
+  - if [[ $USE_SQLALCHEMY == 1 ]]; then pip install sqlalchemy; fi
   - pip install -r requirements-test.txt
   - pip install coveralls
 
