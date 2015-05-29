@@ -11,8 +11,8 @@ COOLFIG
 .. image:: https://img.shields.io/pypi/dm/coolfig.svg
    :target: https://pypi.python.org/pypi/coolfig
 
-.. image:: https://img.shields.io/coveralls/GaretJax/coolfig/develop.svg
-   :target: https://coveralls.io/r/GaretJax/coolfig?branch=develop
+.. image:: https://img.shields.io/coveralls/GaretJax/coolfig/master.svg
+   :target: https://coveralls.io/r/GaretJax/coolfig?branch=master
 
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
    :target: http://coolfig.readthedocs.org/en/latest/
