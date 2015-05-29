@@ -1,6 +1,11 @@
 import os
 import pytest
 
+try:
+    from sqlalchemy.engine import url
+except ImportError:
+    url = None
+
 from .providers import ConfigurationProvider, DictConfig
 from .providers import NOT_PROVIDED
 from .schema import BoundValue, ref
@@ -165,11 +170,16 @@ def test_list():
     assert str_list('a,b,cd, e f g , h ') == ['a', 'b', 'cd', 'e f g', 'h']
 
 
+@pytest.mark.skipif(url is None, reason='sqlalchemy is not installed')
 def test_sqlalchemy_url():
-    engine = pytest.importorskip('sqlalchemy.engine')
-    # from sqlalchemy.engine import url
     val = types.sqlalchemy_url('postgres://user:password@host/database')
-    assert isinstance(val, engine.url.URL)
+    assert isinstance(val, url.URL)
+
+
+@pytest.mark.skipif(url is not None, reason='sqlalchemy is installed')
+def test_sqlalchemy_url_not_implemented():
+    with pytest.raises(NotImplementedError):
+        types.sqlalchemy_url('postgres://user:password@host/database')
 
 
 # def test_validate():
