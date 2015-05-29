@@ -22,6 +22,10 @@ Creating a release
 * Set the correct title for the release in ``HISTORY.rst``.
 * If needed update the ``AUTHORS.rst`` file with new contributors.
 * Commit everything and make sure the working tree is clean.
+* Push everything to github and make sure the tests pass on Travis::
+
+     git push origin master
+
 * Tag the release::
 
      git tag -a "v$(python setup.py --version)" -m "$(python setup.py --name) release version $(python setup.py --version)"
