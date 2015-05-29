@@ -3,6 +3,15 @@ Contribution guidelines
 =======================
 
 
+Running tests
+=============
+
+Use ``tox``::
+
+   pip install tox
+   tox
+
+
 Creating a release
 ==================
 
@@ -11,6 +20,7 @@ Creating a release
 * Make sure ``check-manifest`` is happy.
 * Increment the version number.
 * Set the correct title for the release in ``HISTORY.rst``.
+* If needed update the ``AUTHORS`` file with new contributors.
 * Commit everything and make sure the working tree is clean.
 * Tag the release::
 
