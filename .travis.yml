@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "2.7"
+  - "2.6"
+  - "3.3"
+  - "3.4"
+
+install:
+  - pip install -r requirements-test.txt
+  - pip install coveralls
+
+script: py.test --pep8 --cov coolfig
+
+after_success: coveralls
