@@ -31,3 +31,11 @@ fulfilled by various soueces.
 
 * Free software: MIT license
 * Documentation: http://coolfig.rtfd.org
+
+
+Installation
+============
+
+::
+
+  pip install coolfig
