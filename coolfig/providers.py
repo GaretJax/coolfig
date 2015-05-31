@@ -1,3 +1,7 @@
+import os
+from functools import partial
+
+
 NOT_PROVIDED = object()
 
 
@@ -19,3 +23,6 @@ class DictConfig(ConfigurationProvider):
             return self._conf_dict[self._prefix + key]
         except KeyError:
             return NOT_PROVIDED
+
+
+EnvConfig = partial(DictConfig, os.environ)
