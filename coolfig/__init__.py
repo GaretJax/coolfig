@@ -13,6 +13,6 @@ Support for working with different sources of configuration values.
 from .schema import Value, Settings
 
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __url__ = 'https://github.com/GaretJax/coolfig'
 __all__ = ['Value', 'Settings']
