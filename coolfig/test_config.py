@@ -170,6 +170,11 @@ def test_list():
     assert str_list('a,b,cd, e f g , h ') == ['a', 'b', 'cd', 'e f g', 'h']
 
 
+def test_dottedpath():
+    func = types.dottedpath('coolfig.test_config.test_dottedpath')
+    assert func == test_dottedpath
+
+
 @pytest.mark.skipif(url is None, reason='sqlalchemy is not installed')
 def test_sqlalchemy_url():
     val = types.sqlalchemy_url('postgres://user:password@host/database')
