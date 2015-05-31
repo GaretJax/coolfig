@@ -1,6 +1,7 @@
 """
 Common types for settings classes.
 """
+import importlib
 
 try:
     from sqlalchemy.engine.url import make_url as make_sqlalchemy_url
@@ -22,3 +23,9 @@ def list(inner_type):
     def convert(string):
         return [inner_type(s.strip()) for s in string.split(',')]
     return convert
+
+
+def dottedpath(string):
+    module_path, name = string.rsplit('.', 1)
+    module = importlib.import_module(module_path)
+    return getattr(module, name)
