@@ -28,7 +28,7 @@ Creating a release
 
 * Build and upload the release::
 
-     python setup.py publish
+     ./setup.py publish
 
 * Tag the release::
 
