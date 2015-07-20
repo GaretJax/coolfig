@@ -32,6 +32,17 @@ class Value(object):
             return self.type(value)
 
 
+class DictValue(Value):
+    def __init__(self, type, keytype=str, *args, **kwargs):
+        super(DictValue, self).__init__(type, *args, **kwargs)
+        self.keytype = keytype
+
+    def __call__(self, settingsobj, config_provider, key):
+        key = (self.key if self.key else key) + '_'
+        return {self.keytype(k[len(key):]): self.type(v)
+                for k, v in config_provider.iterprefixed(key)}
+
+
 class BoundValue(object):
     def __init__(self, cls, name, value):
         self.cls = cls
@@ -49,6 +60,19 @@ class BoundValue(object):
     def __repr__(self):  # NOCOV
         return 'BoundValue({}, {}) of class {}'.format(
             self.name, self.value.type, self.cls.__name__)
+
+
+class StaticValue(BoundValue):
+    def __init__(self, value):
+        self.value = value
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        return self.value
+
+    def __repr__(self):  # NOCOV
+        return 'StaticValue({!r})'.format(self.value)
 
 
 class Reference(object):
@@ -75,16 +99,19 @@ class SettingsMeta(type):
         bind_values(cls, clsdict)
         return super(SettingsMeta, cls).__init__(name, bases, clsdict)
 
+    def __iter__(self):
+        for k in dir(self):
+            v = getattr(self, k, None)
+            if isinstance(v, BoundValue):
+                yield k, v
+
 
 class SettingsBase(object):
     def __init__(self, config_provider):
         self.config_provider = config_provider
 
     def __iter__(self):
-        for k in dir(self):
-            v = getattr(self.__class__, k, None)
-            if isinstance(v, BoundValue):
-                yield k, v
+        return iter(self.__class__)
 
     def items(self):
         for k, v in self:
@@ -99,4 +126,13 @@ class SettingsBase(object):
 
 
 class Settings(with_metaclass(SettingsMeta, SettingsBase)):
-    pass
+    @classmethod
+    def merge(cls, *others):
+        """
+        Merge the `others` schema into this instance.
+
+        The values will all be read from the provider of the original object.
+        """
+        for other in others:
+            for k, v in other:
+                setattr(cls, k, BoundValue(cls, k, v.value))
