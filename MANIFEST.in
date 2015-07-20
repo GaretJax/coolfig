@@ -6,6 +6,7 @@ include README.rst
 
 include requirements-dev.txt
 include requirements-test.txt
+include requirements-deps.txt
 include requirements.txt
 
 exclude .coveragerc
