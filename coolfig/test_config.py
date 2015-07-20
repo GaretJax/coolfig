@@ -1,4 +1,5 @@
 import os
+import math
 import pytest
 
 try:
@@ -8,9 +9,23 @@ except ImportError:
 
 from .providers import ConfigurationProvider, DictConfig
 from .providers import NOT_PROVIDED
-from .schema import BoundValue, ref
+from .schema import BoundValue, ref, DictValue
 from .schema import ImproperlyConfigured
 from . import types, Value, Settings
+
+
+def test_lazy_callable():
+    func = types.LazyCallable('not.existing.module', 'func')
+    with pytest.raises(NotImplementedError):
+        func()
+
+    func = types.LazyCallable('string', 'non.existing.func')
+    with pytest.raises(NotImplementedError):
+        func()
+
+    func = types.LazyCallable('math', 'ceil')
+    assert func.func is math.ceil
+    assert func(4.4) == 5
 
 
 def test_config_abc():
@@ -19,14 +34,35 @@ def test_config_abc():
     with pytest.raises(NotImplementedError):
         conf.get('key')
 
+    with pytest.raises(NotImplementedError):
+        conf.iterprefixed('prefix')
 
-def test_dict_config():
+
+def test_dict_get_config():
     conf = DictConfig({
         'TEST_KEY': 1,
     }, prefix='TEST_')
 
     assert conf.get('KEY') == 1
     assert conf.get('NOKEY') is NOT_PROVIDED
+
+
+def test_dict_iter_config():
+    conf = DictConfig({
+        'TEST_KEY_1': 1,
+        'TEST_KEY_2': 2,
+        'TEST_FOO_3': 3,
+        'TEST_KEX_1': 1,
+        'TEST_KEY_3': 3,
+        'TEST_BAR_1': 1,
+    }, prefix='TEST_')
+
+    items = conf.iterprefixed('KEY_')
+    assert sorted(items) == [
+        ('KEY_1', 1),
+        ('KEY_2', 2),
+        ('KEY_3', 3),
+    ]
 
 
 def test_simple():
@@ -48,6 +84,41 @@ def test_simple():
 
     with pytest.raises(ImproperlyConfigured):
         s.NOKEY
+
+
+def test_dict_value():
+    class DictSettings(Settings):
+        DICTKEY = DictValue(str)
+
+    assert isinstance(DictSettings.DICTKEY, BoundValue)
+    s = DictSettings(DictConfig({
+        'DICTKEY_KEY1': 1,
+        'DICTKEY_KEY2': 2,
+        'DICTKE_KEY3': 3,
+    }))
+    assert s.DICTKEY == {'KEY1': '1', 'KEY2': '2'}
+
+
+def test_merge():
+    class SimpleSettings(Settings):
+        ORIGINAL_KEY = Value(int)
+
+    class MergeSettings(Settings):
+        MERGED_KEY = Value(int)
+
+    s = SimpleSettings(DictConfig({
+        'ORIGINAL_KEY': 1,
+        'MERGED_KEY': 2,
+    }))
+
+    assert s.ORIGINAL_KEY == 1
+    with pytest.raises(AttributeError):
+        s.MERGED_KEY
+
+    s.merge(MergeSettings)
+
+    assert s.ORIGINAL_KEY == 1
+    assert s.MERGED_KEY == 2
 
 
 def test_readonly():
