@@ -11,8 +11,11 @@ Support for working with different sources of configuration values.
         providers.DictConfig(os.environ, prefix='MYAPP_'))
 """
 from .schema import Value, Settings
+from .providers import EnvConfig, DictConfig
+from .django import load_django_settings
 
 
 __version__ = '0.2.0'
 __url__ = 'https://github.com/GaretJax/coolfig'
-__all__ = ['Value', 'Settings']
+__all__ = ['Value', 'Settings', 'EnvConfig', 'DictConfig',
+           'load_django_settings']
