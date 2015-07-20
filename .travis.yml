@@ -6,12 +6,12 @@ python:
   - "3.4"
 
 env:
-  - USE_SQLALCHEMY=1
-  - USE_SQLALCHEMY=0
+  - USE_DEPS=1
+  - USE_DEPS=0
 
 install:
-  - if [[ $USE_SQLALCHEMY == 1 ]]; then pip install sqlalchemy; fi
-  - pip install -r requirements-test.txt
+  - if [[ $USE_DEPS == 1 ]]; then pip install -r requirements-test.txt -r requirements-deps.txt; fi
+  - if [[ $USE_DEPS == 0 ]]; then pip install -r requirements-test.txt; fi
   - pip install coveralls
 
 script: py.test --pep8 --cov coolfig

@@ -1,0 +1,3 @@
+# Needed to test support for external libs 
+sqlalchemy
+django-environ
