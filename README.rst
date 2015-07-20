@@ -44,7 +44,9 @@ Installation
 Example
 =======
 
-Define your schema::
+Define your schema:
+
+.. code:: python
 
    from coolfig import Settings, Value, types
 
@@ -54,13 +56,17 @@ Define your schema::
         DB_URL = Value(types.sqlalchemy_url)
         LOCALES = Value(types.list(str))
 
-Instantiate the configuration with a data provider::
+Instantiate the configuration with a data provider:
+
+.. code:: python
 
    from coolfig import EnvConfig
 
    settings = DefaultSettings(EnvConfig(prefix='MYAPP_'))
 
-Profit::
+Profit:
+
+.. code:: python
 
    if settings.DEBUG:
        print(settings.SECRET_KEY)
@@ -73,7 +79,9 @@ Profit::
 Django integration
 ==================
 
-In your ``settings.py`` file::
+In your ``settings.py`` file:
+
+.. code:: python
 
    from coolfig import EnvConfig, load_django_settings
 
@@ -123,14 +131,18 @@ In your ``settings.py`` file::
 
 Then, in each ``settings`` submodule of each app, you can define additional
 setting entries to be added to the main settings object. For example, in 
-``testprj/my_custom_app/settings.py`` you can add the following::
+``testprj/my_custom_app/settings.py`` you can add the following:
+
+.. code:: python
 
    from coolfig import Settings, Value
 
    class AppSettings(Settings):  # The class has to be named AppSettings
       MY_APP_SETTING = Value(str)
 
-Usage is 100% compatible with Django's settings machinery::
+Usage is 100% compatible with Django's settings machinery:
+
+.. code:: python
 
    from django.conf import settings
 
