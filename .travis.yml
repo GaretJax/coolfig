@@ -14,6 +14,6 @@ install:
   - if [[ $USE_DEPS == 0 ]]; then pip install -r requirements-test.txt; fi
   - pip install coveralls
 
-script: py.test --pep8 --cov coolfig
+script: py.test --flake8 --cov coolfig
 
 after_success: coveralls
