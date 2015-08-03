@@ -31,6 +31,10 @@ class BaseDjangoSettings(Settings):
     def install(self, name=None):
         if not name:
             name = os.environ['DJANGO_SETTINGS_MODULE']
+        try:
+            self.__file__ = sys.modules[name].__file__
+        except (KeyError, AttributeError):
+            pass
         sys.modules[name] = self
 
     def load_apps(self, apps=None):
