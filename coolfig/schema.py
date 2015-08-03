@@ -9,7 +9,12 @@ class ImproperlyConfigured(Exception):
     """
 
 
-class Value(object):
+class ValueBase(object):
+    def __call__(self, settingsobj, config_provider, key):
+        raise NotImplementedError
+
+
+class Value(ValueBase):
     def __init__(self, type, default=NOT_PROVIDED, key=None):
         self.type = type
         self.default = default
@@ -30,6 +35,20 @@ class Value(object):
         else:
             # Coerce to the correct type and return it
             return self.type(value)
+
+
+class ComputedValue(ValueBase):
+    def __init__(self, callable, *args, **kwargs):
+        self.callable = callable
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self, settingsobj, config_provider, key):
+        return self.callable(settingsobj, *self.args, **self.kwargs)
+
+
+def computed_value(func):
+    return ComputedValue(func)
 
 
 class DictValue(Value):
@@ -87,7 +106,7 @@ ref = Reference
 
 def bind_values(cls, clsdict):
     for k, v in clsdict.items():
-        if isinstance(v, Value):
+        if isinstance(v, ValueBase):
             setattr(cls, k, BoundValue(cls, k, v))
 
 
