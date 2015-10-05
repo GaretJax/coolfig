@@ -2,6 +2,13 @@
 History
 =======
 
+0.4.0 - 2015-10-05
+==================
+
+* Added support for the CACHES Django settings directive
+* Added support for computed_values
+* Added initial documentation stub
+
 
 0.3.0 - 2015-07-20
 ==================

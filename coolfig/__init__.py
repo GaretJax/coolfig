@@ -15,7 +15,7 @@ from .providers import EnvConfig, DictConfig
 from .django import load_django_settings
 
 
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 __url__ = 'https://github.com/GaretJax/coolfig'
 __all__ = ['Value', 'Dictionary', 'computed_value', 'Settings',
            'EnvConfig', 'DictConfig', 'load_django_settings']
