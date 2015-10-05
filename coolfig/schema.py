@@ -1,4 +1,4 @@
-from six import with_metaclass
+from six import with_metaclass, iteritems
 
 from .providers import NOT_PROVIDED
 
@@ -60,6 +60,17 @@ class DictValue(Value):
         key = (self.key if self.key else key) + '_'
         return {self.keytype(k[len(key):]): self.type(v)
                 for k, v in config_provider.iterprefixed(key)}
+
+
+class Dictionary(ValueBase):
+    def __init__(self, spec):
+        self.spec = spec
+
+    def __call__(self, settingsobj, config_provider, key):
+        return {
+            key: value(settingsobj, config_provider, key)
+            for key, value in iteritems(self.spec)
+        }
 
 
 class BoundValue(object):
