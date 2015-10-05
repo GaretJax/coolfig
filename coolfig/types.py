@@ -40,6 +40,7 @@ def boolean(string):
 sqlalchemy_url = LazyCallable('sqlalchemy.engine.url', 'make_url')
 
 django_db_url = LazyCallable('environ', 'Env.db_url_config')
+django_cache_url = LazyCallable('environ', 'Env.cache_url_config')
 
 
 def list(inner_type, sep=','):

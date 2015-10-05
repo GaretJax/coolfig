@@ -15,6 +15,7 @@ class BaseDjangoSettings(Settings):
     ALLOWED_HOSTS = Value(types.list(str), default=tuple())
 
     DATABASES = DictValue(types.django_db_url, str.lower)
+    CACHES = DictValue(types.django_cache_url, str.lower)
 
     # Internationalization
     # https://docs.djangoproject.com/en/1.8/topics/i18n/
