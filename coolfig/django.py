@@ -67,7 +67,8 @@ def get_app_settings_path(app_path):
             except (ImportError, AttributeError):
                 pass
             else:
-                if issubclass(app_config, AppConfig):
+                if (isinstance(app_config, type) and
+                        issubclass(app_config, AppConfig)):
                     try:
                         return app_config.settings_path
                     except AttributeError:
