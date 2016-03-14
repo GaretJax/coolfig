@@ -70,9 +70,9 @@ def get_app_settings_path(app_path):
                 if (isinstance(app_config, type) and
                         issubclass(app_config, AppConfig)):
                     try:
-                        return app_config.settings_path
+                        return app_config.settings
                     except AttributeError:
-                        app_path = app_config.path
+                        app_path = app_config.name
 
     return app_path + '.settings.AppSettings'
 

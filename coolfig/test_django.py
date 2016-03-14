@@ -154,7 +154,7 @@ def test_load_appconfig():
         APP_KEY = Value(str)
 
     class AppConfig(DjangoAppConfig):
-        path = 'my_test_appconfig.module.submodule'
+        name = 'my_test_appconfig.module.submodule'
 
     with pytest.raises(AttributeError):
         s.APP_KEY
@@ -189,8 +189,8 @@ def test_load_appconfig_custom():
         APP_KEY = Value(str)
 
     class AppConfig(DjangoAppConfig):
-        path = 'my_test_appconfig_custom.module.submodule'
-        settings_path = 'some_module.custom_settings.CustomSettings'
+        name = 'my_test_appconfig_custom.module.submodule'
+        settings = 'some_module.custom_settings.CustomSettings'
 
     with pytest.raises(AttributeError):
         s.APP_KEY
