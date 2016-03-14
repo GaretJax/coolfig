@@ -1,19 +1,34 @@
 language: python
 
-python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
+sudo: false
 
 env:
-  - USE_DEPS=1
-  - USE_DEPS=0
+  matrix:
+    - TOXENV=py27-dj15
+    - TOXENV=py27-dj16
+    - TOXENV=py27-dj17
+    - TOXENV=py27-dj18
+    - TOXENV=py34-dj15
+    - TOXENV=py34-dj16
+    - TOXENV=py34-dj17
+    - TOXENV=py34-dj18
+    - TOXENV=pypy19-dj15
+    - TOXENV=pypy19-dj16
+    - TOXENV=pypy19-dj17
+    - TOXENV=pypy19-dj18
+    - TOXENV=py27-dj14
+    - TOXENV=pypy19-dj14
+    - TOXENV=flake8
+
+cache:
+  directories:
+    - $HOME/.wheelhouse
 
 install:
-  - if [[ $USE_DEPS == 1 ]]; then pip install -r requirements-test.txt -r requirements-deps.txt; fi
-  - if [[ $USE_DEPS == 0 ]]; then pip install -r requirements-test.txt; fi
+  - pip install tox
   - pip install coveralls
 
-script: py.test --flake8 --cov coolfig
+script:
+  - tox -e $TOXENV
 
 after_success: coveralls
