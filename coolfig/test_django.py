@@ -11,6 +11,11 @@ try:
 except ImportError:
     url = None
 
+try:
+    from django.apps import AppConfig as DjangoAppConfig
+except ImportError:
+    DjangoAppConfig = None
+
 from .django import BaseDjangoSettings, make_django_settings
 from .django import load_django_settings
 from .providers import DictConfig
@@ -48,23 +53,22 @@ def set_key(dictionary, key, value):
             del dictionary[key]
 
 
-def install_app_settings(app_path, settings_cls):
-    def iter_ancestors(path, sep='.'):
-        position = 0
-        try:
-            while True:
-                position = app_path.index(sep, position + 1)
-                yield app_path[:position]
-        except ValueError:
-            pass
-        yield path
+def iter_ancestors(path, sep='.'):
+    position = 0
+    try:
+        while True:
+            position = path.index(sep, position + 1)
+            yield path[:position]
+    except ValueError:
+        pass
+    yield path
 
-    for path in iter_ancestors(app_path):
-        sys.modules[path] = types.ModuleType(path)
 
-    settings_module = types.ModuleType(app_path + '.settins')
-    settings_module.AppSettings = settings_cls
-    sys.modules[app_path + '.settings'] = settings_module
+def install_module(full_path, **attrs):
+    for path in iter_ancestors(full_path):
+        settings_module = sys.modules[path] = types.ModuleType(path)
+    for k, v in attrs.items():
+        setattr(settings_module, k, v)
 
 
 def test_install():
@@ -122,7 +126,8 @@ def test_load_apps():
     with pytest.raises(AttributeError):
         s.APP_KEY
 
-    install_app_settings('my_test_app.module.submodule', AppSettings)
+    install_module('my_test_app.module.submodule.settings',
+                   AppSettings=AppSettings)
     s.load_apps([
         'my_non_test_app',  # Does not exist
         'my_test_app.module.submodule',
@@ -131,11 +136,81 @@ def test_load_apps():
     assert s.APP_KEY == 'app_val'
 
 
+@pytest.mark.skipif(DjangoAppConfig is None,
+                    reason='django version does not support app configs')
+def test_load_appconfig():
+    settings_class = make_django_settings({
+        'INSTALLED_APPS': []
+    })
+    s = settings_class(DictConfig({
+        'APP_KEY': 'appconfig_val'
+    }))
+
+    # Load empty apps
+    s.load_apps()
+    s.load_apps([])
+
+    class AppSettings(Settings):
+        APP_KEY = Value(str)
+
+    class AppConfig(DjangoAppConfig):
+        path = 'my_test_appconfig.module.submodule'
+
+    with pytest.raises(AttributeError):
+        s.APP_KEY
+
+    install_module('my_test_appconfig.module.submodule.apps',
+                   AppConfig=AppConfig)
+    install_module('my_test_appconfig.module.submodule.settings',
+                   AppSettings=AppSettings)
+    s.load_apps([
+        'my_non_test_app',  # Does not exist
+        'my_test_appconfig.module.submodule.apps.AppConfig',
+    ])
+
+    assert s.APP_KEY == 'appconfig_val'
+
+
+@pytest.mark.skipif(DjangoAppConfig is None,
+                    reason='django version does not support app configs')
+def test_load_appconfig_custom():
+    settings_class = make_django_settings({
+        'INSTALLED_APPS': []
+    })
+    s = settings_class(DictConfig({
+        'APP_KEY': 'appconfig_custom_val'
+    }))
+
+    # Load empty apps
+    s.load_apps()
+    s.load_apps([])
+
+    class AppSettings(Settings):
+        APP_KEY = Value(str)
+
+    class AppConfig(DjangoAppConfig):
+        path = 'my_test_appconfig_custom.module.submodule'
+        settings_path = 'some_module.custom_settings.CustomSettings'
+
+    with pytest.raises(AttributeError):
+        s.APP_KEY
+
+    install_module('my_test_appconfig_custom.module.submodule.apps',
+                   AppConfig=AppConfig)
+    install_module('some_module.custom_settings', CustomSettings=AppSettings)
+    s.load_apps([
+        'my_non_test_app',  # Does not exist
+        'my_test_appconfig_custom.module.submodule.apps.AppConfig',
+    ])
+
+    assert s.APP_KEY == 'appconfig_custom_val'
+
+
 def test_load_settings():
     class AppSettings(Settings):
         APP_KEY = Value(str)
 
-    install_app_settings('my_loaded_app', AppSettings)
+    install_module('my_loaded_app.settings', AppSettings=AppSettings)
 
     provider = DictConfig({
         'APP_KEY': 'app_val',

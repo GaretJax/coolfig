@@ -43,13 +43,37 @@ class BaseDjangoSettings(Settings):
             apps = getattr(self, 'INSTALLED_APPS', [])
 
         for app_path in apps:
-            settings_path = app_path + '.settings.AppSettings'
+            settings_path = get_app_settings_path(app_path)
+
             try:
                 app_settings = types.dottedpath(settings_path)
             except (ImportError, AttributeError):
                 pass
             else:
                 self.merge(app_settings)
+
+
+def get_app_settings_path(app_path):
+    try:
+        from django.apps import AppConfig
+    except ImportError:
+        # AppConfigs not supported on this django version
+        pass
+    else:
+        if '.' in app_path:
+            # Check if this is a path to a Django AppConfig class
+            try:
+                app_config = types.dottedpath(app_path)
+            except (ImportError, AttributeError):
+                pass
+            else:
+                if issubclass(app_config, AppConfig):
+                    try:
+                        return app_config.settings_path
+                    except AttributeError:
+                        app_path = app_config.path
+
+    return app_path + '.settings.AppSettings'
 
 
 def make_django_settings(static_config, base=BaseDjangoSettings):
