@@ -2,6 +2,15 @@
 History
 =======
 
+1.0.0 - 2016-03-14
+==================
+
+* Added support for Django ``AppConfig`` (including custom settings path
+  configured with a ``settings_path`` property on the config class.
+* Officially supporting Django 1.4, 1.5, 1.6, 1.7, 1.8 and 1.9, running on
+  Python 2.7, 3.4 (where Django supports itself supports it) and PyPy.
+
+
 0.4.0 - 2015-10-05
 ==================
 
