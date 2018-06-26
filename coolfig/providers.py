@@ -34,4 +34,18 @@ class DictConfig(ConfigurationProvider):
                 yield (k[len(self._prefix):], self._conf_dict[k])
 
 
+class EnvDirConfig(ConfigurationProvider):
+    def __init__(self, base_path):
+        self._base_path = base_path
+
+    def get(self, key):
+        path = os.path.join(self._base_path, key)
+        try:
+            with open(path) as fh:
+                return fh.read()
+        except:  # TODO: Handle OSErrors (not found, not readable,...)
+            return NOT_PROVIDED
+
+
 EnvConfig = partial(DictConfig, os.environ)
+SecretsConfig = partial(EnvDirConfig, '/run/secrets')
