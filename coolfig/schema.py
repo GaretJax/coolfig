@@ -79,6 +79,24 @@ class DictValue(Value):
                 for k, v in settingsobj.config_provider.iterprefixed(key)}
 
 
+class DictSecret(DictValue):
+    def __init__(self, type, keytype=str, fallback=False, *args, **kwargs):
+        super(DictSecret, self).__init__(type, keytype, *args, **kwargs)
+        self.fallback = fallback
+
+    def __call__(self, settingsobj, key):
+        key = (self.key if self.key else key) + '_'
+        data = dict()
+        for k, v in settingsobj.secrets_provider.iterprefixed(key):
+            data[self.keytype(k[len(key):])] = self.type(v)
+        if self.fallback: # NOTE: and len(data) == 0:
+            for k, v in settingsobj.config_provider.iterprefixed(key):
+                postfix = self.keytype((k[len(key):]))
+                if postfix not in data.keys():
+                    data[postfix] = self.type(v)
+        return data
+
+
 class Dictionary(ValueBase):
     def __init__(self, spec):
         self.spec = spec

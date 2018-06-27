@@ -35,8 +35,9 @@ class DictConfig(ConfigurationProvider):
 
 
 class EnvDirConfig(ConfigurationProvider):
-    def __init__(self, base_path):
+    def __init__(self, base_path, prefix=''):
         self._base_path = base_path
+        self._prefix = prefix
 
     def get(self, key):
         path = os.path.join(self._base_path, key)
@@ -45,6 +46,12 @@ class EnvDirConfig(ConfigurationProvider):
                 return fh.read()
         except:  # TODO: Handle OSErrors (not found, not readable,...)
             return NOT_PROVIDED
+
+    def iterprefixed(self, prefix):
+        prefix = self._prefix + prefix
+        for k in os.listdir(self._base_path):
+            if k.startswith(prefix):
+                yield (k[len(self._prefix):], self.get(k))
 
 
 EnvConfig = partial(DictConfig, os.environ)
