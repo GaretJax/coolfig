@@ -44,13 +44,15 @@ class EnvDirConfig(ConfigurationProvider):
         try:
             with open(path) as fh:
                 return fh.read()
-        except:  # TODO: Handle OSErrors (not found, not readable,...)
-            return NOT_PROVIDED
+        except IOError as e:
+            if e.args[0] == 13:  # Wrong permissions
+                raise e
+            return NOT_PROVIDED  # File does not exist
 
     def iterprefixed(self, prefix):
         prefix = self._prefix + prefix
         for k in os.listdir(self._base_path):
-            if k.startswith(prefix):
+            if k.startswith(prefix) and os.path.isfile(k):
                 yield (k[len(self._prefix):], self.get(k))
 
 
