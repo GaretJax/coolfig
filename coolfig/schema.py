@@ -147,6 +147,7 @@ class Reference(object):
     def __call__(self, obj):
         return getattr(obj, self.key)
 
+
 ref = Reference  # NOQA
 
 

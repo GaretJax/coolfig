@@ -52,7 +52,8 @@ class EnvDirConfig(ConfigurationProvider):
     def iterprefixed(self, prefix):
         prefix = self._prefix + prefix
         for k in os.listdir(self._base_path):
-            if k.startswith(prefix) and os.path.isfile(k):
+            path = os.path.join(self._base_path, k)
+            if k.startswith(prefix) and os.path.isfile(path):
                 yield (k[len(self._prefix):], self.get(k))
 
 
