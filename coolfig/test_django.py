@@ -102,7 +102,7 @@ def test_iter():
 
     settings = settings_class(
         DictConfig({'SECRET_KEY': 'test-secret-key'}),
-        secrets_provider=SecretsConfig(dir_fallback=True),
+        secrets_provider=SecretsConfig(),
     )
     # Secrets Provider required since SECRET_KEY is a Secret
     confdict = settings.as_dict()

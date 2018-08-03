@@ -36,10 +36,9 @@ class DictConfig(ConfigurationProvider):
 
 
 class EnvDirConfig(ConfigurationProvider):
-    def __init__(self, base_path, prefix='', dir_fallback=False):
+    def __init__(self, base_path, prefix=''):
         self._base_path = base_path
         self._prefix = prefix
-        self._dir_fallback = dir_fallback
 
     def get(self, key):
         path = os.path.join(self._base_path, key)
@@ -53,14 +52,13 @@ class EnvDirConfig(ConfigurationProvider):
 
     def iterprefixed(self, prefix):
         prefix = self._prefix + prefix
-        try:
+        if os.path.exists(self._base_path):
             for k in os.listdir(self._base_path):
                 path = os.path.join(self._base_path, k)
                 if k.startswith(prefix) and os.path.isfile(path):
                     yield (k[len(self._prefix):], self.get(k))
-        except OSError as e:
-            if e.errno == errno.ENOENT and not self._dir_fallback:
-                raise  # Secrets directory does not exist
+        else:
+            return
 
 
 EnvConfig = partial(DictConfig, os.environ)
