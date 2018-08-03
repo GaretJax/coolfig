@@ -57,8 +57,6 @@ class EnvDirConfig(ConfigurationProvider):
                 path = os.path.join(self._base_path, k)
                 if k.startswith(prefix) and os.path.isfile(path):
                     yield (k[len(self._prefix):], self.get(k))
-        else:
-            return
 
 
 EnvConfig = partial(DictConfig, os.environ)
