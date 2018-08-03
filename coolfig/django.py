@@ -6,7 +6,7 @@ import os
 import six
 
 from . import types
-from .schema import Settings, Value, DictValue, StaticValue, Secret, DictSecret
+from .schema import Settings, Value, StaticValue, Secret, DictSecret
 
 
 class BaseDjangoSettings(Settings):
