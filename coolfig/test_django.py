@@ -100,11 +100,12 @@ def test_iter():
         'ROOT_URLCONF': 'test.urls',
     })
 
-    s = settings_class(DictConfig({
-        'SECRET_KEY': 'test-secret-key'
-    }), secrets_provider=SecretsConfig())
+    settings = settings_class(
+        DictConfig({'SECRET_KEY': 'test-secret-key'}),
+        secrets_provider=SecretsConfig(dir_fallback=True),
+    )
     # Secrets Provider required since SECRET_KEY is a Secret
-    confdict = s.as_dict()
+    confdict = settings.as_dict()
     assert confdict['INSTALLED_APPS'] == []
     assert confdict['ROOT_URLCONF'] == 'test.urls'
 
