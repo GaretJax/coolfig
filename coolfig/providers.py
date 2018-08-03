@@ -1,4 +1,4 @@
-import os
+import os, errno
 from functools import partial
 
 
@@ -45,8 +45,8 @@ class EnvDirConfig(ConfigurationProvider):
             with open(path) as fh:
                 return fh.read()
         except IOError as e:
-            if e.args[0] == 13:  # Wrong permissions
-                raise e
+            if e.errno == errno.EACCES:  # Wrong permissions
+                raise
             return NOT_PROVIDED  # File does not exist
 
     def iterprefixed(self, prefix):

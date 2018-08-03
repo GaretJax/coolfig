@@ -18,7 +18,7 @@ except ImportError:
 
 from .django import BaseDjangoSettings, make_django_settings
 from .django import load_django_settings
-from .providers import DictConfig
+from .providers import DictConfig, SecretsConfig
 from .types import django_db_url
 from . import Value, Settings
 
@@ -102,7 +102,8 @@ def test_iter():
 
     s = settings_class(DictConfig({
         'SECRET_KEY': 'test-secret-key'
-    }))
+    }), secrets_provider=SecretsConfig())
+    # Secrets Provider required since SECRET_KEY is a Secret
     confdict = s.as_dict()
     assert confdict['INSTALLED_APPS'] == []
     assert confdict['ROOT_URLCONF'] == 'test.urls'

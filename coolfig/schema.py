@@ -89,7 +89,7 @@ class DictSecret(DictValue):
         data = {}
         for k, v in settingsobj.secrets_provider.iterprefixed(key):
             data[self.keytype(k[len(key):])] = self.type(v)
-        if self.fallback and len(data) == 0:
+        if self.fallback and not data:
             for k, v in settingsobj.config_provider.iterprefixed(key):
                 postfix = self.keytype((k[len(key):]))
                 if postfix not in data.keys():
