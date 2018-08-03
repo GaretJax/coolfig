@@ -10,7 +10,7 @@ class ImproperlyConfigured(Exception):
 
 
 class ValueBase(object):
-    def __call__(self, settingsobj, config_provider, key):
+    def __call__(self, settingsobj, key):
         raise NotImplementedError
 
 
@@ -20,9 +20,12 @@ class Value(ValueBase):
         self.default = default
         self.key = key
 
-    def __call__(self, settingsobj, config_provider, key):
+    def _get_provided_value(self, settingsobj, key):
+        return settingsobj.config_provider.get(key)
+
+    def __call__(self, settingsobj, key):
         key = self.key if self.key else key
-        value = config_provider.get(key)
+        value = self._get_provided_value(settingsobj, key)
         if value is NOT_PROVIDED and self.default is NOT_PROVIDED:
             # Value is required but was not provided
             raise ImproperlyConfigured('no value set for {}'.format(key))
@@ -37,13 +40,27 @@ class Value(ValueBase):
             return self.type(value)
 
 
+class Secret(Value):
+    def __init__(self, type, default=NOT_PROVIDED, key=None, fallback=False):
+        super(Secret, self).__init__(type, default, key)
+        self.fallback = fallback
+
+    def _get_provided_value(self, settingsobj, key):
+        value = NOT_PROVIDED
+        if settingsobj.secrets_provider:
+            value = settingsobj.secrets_provider.get(key)
+        if value is NOT_PROVIDED and self.fallback:
+            value = super(Secret, self)._get_provided_value(settingsobj, key)
+        return value
+
+
 class ComputedValue(ValueBase):
     def __init__(self, callable, *args, **kwargs):
         self.callable = callable
         self.args = args
         self.kwargs = kwargs
 
-    def __call__(self, settingsobj, config_provider, key):
+    def __call__(self, settingsobj, key):
         return self.callable(settingsobj, *self.args, **self.kwargs)
 
 
@@ -56,19 +73,37 @@ class DictValue(Value):
         super(DictValue, self).__init__(type, *args, **kwargs)
         self.keytype = keytype
 
-    def __call__(self, settingsobj, config_provider, key):
+    def __call__(self, settingsobj, key):
         key = (self.key if self.key else key) + '_'
         return {self.keytype(k[len(key):]): self.type(v)
-                for k, v in config_provider.iterprefixed(key)}
+                for k, v in settingsobj.config_provider.iterprefixed(key)}
+
+
+class DictSecret(DictValue):
+    def __init__(self, type, keytype=str, fallback=False, *args, **kwargs):
+        super(DictSecret, self).__init__(type, keytype, *args, **kwargs)
+        self.fallback = fallback
+
+    def __call__(self, settingsobj, key):
+        key = (self.key if self.key else key) + '_'
+        data = {}
+        for k, v in settingsobj.secrets_provider.iterprefixed(key):
+            data[self.keytype(k[len(key):])] = self.type(v)
+        if self.fallback and not data:
+            for k, v in settingsobj.config_provider.iterprefixed(key):
+                postfix = self.keytype((k[len(key):]))
+                if postfix not in data.keys():
+                    data[postfix] = self.type(v)
+        return data
 
 
 class Dictionary(ValueBase):
     def __init__(self, spec):
         self.spec = spec
 
-    def __call__(self, settingsobj, config_provider, key):
+    def __call__(self, settingsobj, key):
         return {
-            key: value(settingsobj, config_provider, key)
+            key: value(settingsobj, key)
             for key, value in iteritems(self.spec)
         }
 
@@ -82,7 +117,7 @@ class BoundValue(object):
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
-        return self.value(obj, obj.config_provider, self.name)
+        return self.value(obj, self.name)
 
     def __set__(self, obj, objtype=None):
         raise AttributeError("can't set attribute")
@@ -112,7 +147,8 @@ class Reference(object):
     def __call__(self, obj):
         return getattr(obj, self.key)
 
-ref = Reference
+
+ref = Reference  # NOQA
 
 
 def bind_values(cls, clsdict):
@@ -137,8 +173,9 @@ class SettingsMeta(type):
 
 
 class SettingsBase(object):
-    def __init__(self, config_provider):
+    def __init__(self, config_provider, secrets_provider=None):
         self.config_provider = config_provider
+        self.secrets_provider = secrets_provider
 
     def __iter__(self):
         return iter(self.__class__)
