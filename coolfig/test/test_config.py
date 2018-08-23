@@ -7,11 +7,11 @@ try:
 except ImportError:
     url = None
 
-from .providers import ConfigurationProvider, DictConfig
-from .providers import NOT_PROVIDED
-from .schema import BoundValue, ref, DictValue
-from .schema import ImproperlyConfigured
-from . import types, Value, Settings
+from coolfig.providers import ConfigurationProvider, DictConfig
+from coolfig.providers import NOT_PROVIDED
+from coolfig.schema import BoundValue, ref, DictValue
+from coolfig.schema import ImproperlyConfigured
+from coolfig import types, Value, Settings
 
 
 def test_lazy_callable():
@@ -242,7 +242,7 @@ def test_list():
 
 
 def test_dottedpath():
-    func = types.dottedpath('coolfig.test_config.test_dottedpath')
+    func = types.dottedpath('coolfig.test.test_config.test_dottedpath')
     assert func == test_dottedpath
 
 

@@ -16,11 +16,11 @@ try:
 except ImportError:
     DjangoAppConfig = None
 
-from .django import BaseDjangoSettings, make_django_settings
-from .django import load_django_settings
-from .providers import DictConfig, SecretsConfig
-from .types import django_db_url
-from . import Value, Settings
+from coolfig.django import BaseDjangoSettings, make_django_settings
+from coolfig.django import load_django_settings
+from coolfig.providers import DictConfig
+from coolfig.types import django_db_url
+from coolfig import Value, Settings
 
 
 @contextlib.contextmanager
@@ -102,9 +102,7 @@ def test_iter():
 
     settings = settings_class(
         DictConfig({'SECRET_KEY': 'test-secret-key'}),
-        secrets_provider=SecretsConfig(),
     )
-    # Secrets Provider required since SECRET_KEY is a Secret
     confdict = settings.as_dict()
     assert confdict['INSTALLED_APPS'] == []
     assert confdict['ROOT_URLCONF'] == 'test.urls'
