@@ -60,4 +60,3 @@ class EnvDirConfig(ConfigurationProvider):
 
 
 EnvConfig = partial(DictConfig, os.environ)
-SecretsConfig = partial(EnvDirConfig, '/run/secrets/')

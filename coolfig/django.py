@@ -6,16 +6,16 @@ import os
 import six
 
 from . import types
-from .schema import Settings, Value, StaticValue, Secret, DictSecret
+from .schema import Settings, Value, StaticValue, DictValue
 
 
 class BaseDjangoSettings(Settings):
-    SECRET_KEY = Secret(str, fallback=True)
+    SECRET_KEY = Value(str)
     DEBUG = Value(types.boolean, default=False)
     ALLOWED_HOSTS = Value(types.list(str), default=tuple())
 
-    DATABASES = DictSecret(types.django_db_url, str.lower, fallback=True)
-    CACHES = DictSecret(types.django_cache_url, str.lower, fallback=True)
+    DATABASES = DictValue(types.django_db_url, str.lower)
+    CACHES = DictValue(types.django_cache_url, str.lower)
 
     # Internationalization
     # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -85,8 +85,8 @@ def make_django_settings(static_config, base=BaseDjangoSettings):
 
 
 def load_django_settings(provider, static_config, base=BaseDjangoSettings,
-                         apps=None, name=None, secrets_provider=None):
+                         apps=None, name=None):
     settings_class = make_django_settings(static_config, base)
-    settings = settings_class(provider, secrets_provider=secrets_provider)
+    settings = settings_class(provider)
     settings.install(name)
     settings.load_apps(apps)

@@ -40,20 +40,6 @@ class Value(ValueBase):
             return self.type(value)
 
 
-class Secret(Value):
-    def __init__(self, type, default=NOT_PROVIDED, key=None, fallback=False):
-        super(Secret, self).__init__(type, default, key)
-        self.fallback = fallback
-
-    def _get_provided_value(self, settingsobj, key):
-        value = NOT_PROVIDED
-        if settingsobj.secrets_provider:
-            value = settingsobj.secrets_provider.get(key)
-        if value is NOT_PROVIDED and self.fallback:
-            value = super(Secret, self)._get_provided_value(settingsobj, key)
-        return value
-
-
 class ComputedValue(ValueBase):
     def __init__(self, callable, *args, **kwargs):
         self.callable = callable
@@ -77,24 +63,6 @@ class DictValue(Value):
         key = (self.key if self.key else key) + '_'
         return {self.keytype(k[len(key):]): self.type(v)
                 for k, v in settingsobj.config_provider.iterprefixed(key)}
-
-
-class DictSecret(DictValue):
-    def __init__(self, type, keytype=str, fallback=False, *args, **kwargs):
-        super(DictSecret, self).__init__(type, keytype, *args, **kwargs)
-        self.fallback = fallback
-
-    def __call__(self, settingsobj, key):
-        key = (self.key if self.key else key) + '_'
-        data = {}
-        for k, v in settingsobj.secrets_provider.iterprefixed(key):
-            data[self.keytype(k[len(key):])] = self.type(v)
-        if self.fallback and not data:
-            for k, v in settingsobj.config_provider.iterprefixed(key):
-                postfix = self.keytype((k[len(key):]))
-                if postfix not in data.keys():
-                    data[postfix] = self.type(v)
-        return data
 
 
 class Dictionary(ValueBase):
@@ -173,9 +141,8 @@ class SettingsMeta(type):
 
 
 class SettingsBase(object):
-    def __init__(self, config_provider, secrets_provider=None):
+    def __init__(self, config_provider):
         self.config_provider = config_provider
-        self.secrets_provider = secrets_provider
 
     def __iter__(self):
         return iter(self.__class__)
