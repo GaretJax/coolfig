@@ -63,8 +63,10 @@ class Setup(object):
     def meta(cls, key):
         data = cls.read(os.path.join(PACKAGE, "__init__.py"))
         version = (
-            re.search(u"__{}__\s*=\s*u?('|\")([^']+)('|\")".format(key), data)
-            .group(1)
+            re.search(
+                u"__{}__\s*=\s*u?('|\")([^'\"]+)('|\")".format(key), data
+            )
+            .group(2)
             .strip()
         )
         return version
