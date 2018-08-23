@@ -1,38 +1,63 @@
 language: python
-python:
-  - "2.7"
-  - "3.6"
-  - "pypy"
-  - "pypy3"
 
 sudo: false
 
-env:
-  matrix:
-    - TOXENV=py27-sqlalchemy
-    - TOXENV=py36-sqlalchemy
-    - TOXENV=pypy2-sqlalchemy
-    - TOXENV=py27-django-dj18
-    - TOXENV=py27-django-dj19
-    - TOXENV=py27-django-dj110
-    - TOXENV=py27-django-dj111
-    - TOXENV=pypy2-django-dj18
-    - TOXENV=pypy2-django-dj19
-    - TOXENV=pypy2-django-dj110
-    - TOXENV=pypy2-django-dj111
-    - TOXENV=py36-django-dj18
-    - TOXENV=py36-django-dj19
-    - TOXENV=py36-django-dj110
-    - TOXENV=py36-django-dj111
-    - TOXENV=py36-django-dj20
-    - TOXENV=py36-django-dj21
-    - TOXENV=pypy3-django-dj18
-    - TOXENV=pypy3-django-dj19
-    - TOXENV=pypy3-django-dj110
-    - TOXENV=pypy3-django-dj111
-    - TOXENV=pypy3-django-dj20
-    - TOXENV=pypy3-django-dj21
-    - TOXENV=py36-lint
+matrix:
+  include:
+    - python: 2.7
+      env: TOXENV=py27-sqlalchemy
+    - python: 2.7
+      env: TOXENV=py27-django-dj18
+    - python: 2.7
+      env: TOXENV=py27-django-dj19
+    - python: 2.7
+      env: TOXENV=py27-django-dj110
+    - python: 2.7
+      env: TOXENV=py27-django-dj111
+
+    - python: 3.6
+      env: TOXENV=py36-django-dj18
+    - python: 3.6
+      env: TOXENV=py36-django-dj19
+    - python: 3.6
+      env: TOXENV=py36-django-dj110
+    - python: 3.6
+      env: TOXENV=py36-django-dj111
+    - python: 3.6
+      env: TOXENV=py36-django-dj20
+    - python: 3.6
+      env: TOXENV=py36-django-dj21
+    - python: 3.6
+      env: TOXENV=py36-sqlalchemy
+
+    - python: pypy
+      env: TOXENV=pypy2-django-dj18
+    - python: pypy
+      env: TOXENV=pypy2-django-dj19
+    - python: pypy
+      env: TOXENV=pypy2-django-dj110
+    - python: pypy
+      env: TOXENV=pypy2-django-dj111
+    - python: pypy
+      env: TOXENV=pypy2-sqlalchemy
+
+    - python: pypy3
+      env: TOXENV=pypy3-django-dj18
+    - python: pypy3
+      env: TOXENV=pypy3-django-dj19
+    - python: pypy3
+      env: TOXENV=pypy3-django-dj110
+    - python: pypy3
+      env: TOXENV=pypy3-django-dj111
+    - python: pypy3
+      env: TOXENV=pypy3-django-dj20
+    - python: pypy3
+      env: TOXENV=pypy3-django-dj21
+    - python: pypy3
+      env: TOXENV=pypy3-sqlalchemy
+
+    - python: 3.6
+      env: TOXENV=py36-lint
 
 cache:
   directories:
