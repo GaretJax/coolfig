@@ -57,7 +57,7 @@ matrix:
       env: TOXENV=pypy3-sqlalchemy
 
     - python: 3.6
-      env: TOXENV=py36-lint
+      env: TOXENV=lint
 
 cache:
   directories:
