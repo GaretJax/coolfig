@@ -32,13 +32,13 @@ class Setup(object):
                 raise
             return ''
 
-    @staticmethod
-    def requirements(fname):
+    @classmethod
+    def requirements(cls, fname):
         """
         Create a list of requirements from the output of the pip freeze command
         saved in a text file.
         """
-        packages = Setup.read(fname, fail_silently=True).split('\n')
+        packages = cls.read(fname, fail_silently=True).split('\n')
         packages = (p.strip() for p in packages)
         packages = (p for p in packages if p and not p.startswith('#'))
         packages = (p for p in packages if p and not p.startswith('https://'))
@@ -59,23 +59,24 @@ class Setup(object):
                 for name in files:
                     yield os.path.join(basedir, root, name)[rem:]
 
-    @staticmethod
-    def version():
-        data = Setup.read(os.path.join(PACKAGE, '__init__.py'))
-        version = (re.search(u"__version__\s*=\s*u?'([^']+)'", data)
+    @classmethod
+    def meta(cls, key):
+        data = cls.read(os.path.join(PACKAGE, '__init__.py'))
+        version = (re.search(u"__{}__\s*=\s*u?('|\")([^']+)('|\")".format(key), data)
                    .group(1).strip())
         return version
 
-    @staticmethod
-    def url():
-        data = Setup.read(os.path.join(PACKAGE, '__init__.py'))
-        version = (re.search(u"__url__\s*=\s*u?'([^']+)'", data)
-                   .group(1).strip())
-        return version
+    @classmethod
+    def version(cls):
+        return cls.meta('version')
 
-    @staticmethod
-    def longdesc():
-        return Setup.read('README.rst') + '\n\n' + Setup.read('HISTORY.rst')
+    @classmethod
+    def url(cls):
+        return cls.meta('url')
+
+    @classmethod
+    def longdesc(cls):
+        return cls.read('README.rst') + '\n\n' + cls.read('HISTORY.rst')
 
     @staticmethod
     def test_links():

@@ -28,7 +28,7 @@ class Value(ValueBase):
         value = self._get_provided_value(settingsobj, key)
         if value is NOT_PROVIDED and self.default is NOT_PROVIDED:
             # Value is required but was not provided
-            raise ImproperlyConfigured('no value set for {}'.format(key))
+            raise ImproperlyConfigured("no value set for {}".format(key))
         elif value is NOT_PROVIDED:
             # Value is optional, return the default
             if isinstance(self.default, Reference):
@@ -60,9 +60,11 @@ class DictValue(Value):
         self.keytype = keytype
 
     def __call__(self, settingsobj, key):
-        key = (self.key if self.key else key) + '_'
-        return {self.keytype(k[len(key):]): self.type(v)
-                for k, v in settingsobj.config_provider.iterprefixed(key)}
+        key = (self.key if self.key else key) + "_"
+        return {
+            self.keytype(k[len(key) :]): self.type(v)
+            for k, v in settingsobj.config_provider.iterprefixed(key)
+        }
 
 
 class Dictionary(ValueBase):
@@ -71,8 +73,7 @@ class Dictionary(ValueBase):
 
     def __call__(self, settingsobj, key):
         return {
-            key: value(settingsobj, key)
-            for key, value in iteritems(self.spec)
+            key: value(settingsobj, key) for key, value in iteritems(self.spec)
         }
 
 
@@ -91,8 +92,9 @@ class BoundValue(object):
         raise AttributeError("can't set attribute")
 
     def __repr__(self):  # NOCOV
-        return 'BoundValue({}, {}) of class {}'.format(
-            self.name, self.value.type, self.cls.__name__)
+        return "BoundValue({}, {}) of class {}".format(
+            self.name, self.value.type, self.cls.__name__
+        )
 
 
 class StaticValue(BoundValue):
@@ -105,7 +107,7 @@ class StaticValue(BoundValue):
         return self.value
 
     def __repr__(self):  # NOCOV
-        return 'StaticValue({!r})'.format(self.value)
+        return "StaticValue({!r})".format(self.value)
 
 
 class Reference(object):

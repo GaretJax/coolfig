@@ -20,19 +20,19 @@ class BaseDjangoSettings(Settings):
 
     # Internationalization
     # https://docs.djangoproject.com/en/1.8/topics/i18n/
-    LANGUAGE_CODE = Value(str, default='en-us')
-    TIME_ZONE = Value(str, default='UTC')
+    LANGUAGE_CODE = Value(str, default="en-us")
+    TIME_ZONE = Value(str, default="UTC")
     USE_I18N = Value(types.boolean, default=True)
     USE_L10N = Value(types.boolean, default=True)
     USE_TZ = Value(types.boolean, default=True)
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/1.8/howto/static-files/
-    STATIC_URL = Value(str, default='/static/')
+    STATIC_URL = Value(str, default="/static/")
 
     def install(self, name=None):
         if not name:
-            name = os.environ['DJANGO_SETTINGS_MODULE']
+            name = os.environ["DJANGO_SETTINGS_MODULE"]
         try:
             self.__file__ = sys.modules[name].__file__
         except (KeyError, AttributeError):
@@ -41,7 +41,7 @@ class BaseDjangoSettings(Settings):
 
     def load_apps(self, apps=None):
         if apps is None:
-            apps = getattr(self, 'INSTALLED_APPS', [])
+            apps = getattr(self, "INSTALLED_APPS", [])
 
         for app_path in apps:
             settings_path = get_app_settings_path(app_path)
@@ -61,32 +61,36 @@ def get_app_settings_path(app_path):
         # AppConfigs not supported on this django version
         pass
     else:
-        if '.' in app_path:
+        if "." in app_path:
             # Check if this is a path to a Django AppConfig class
             try:
                 app_config = types.dottedpath(app_path)
             except (ImportError, AttributeError):
                 pass
             else:
-                if (isinstance(app_config, type) and
-                        issubclass(app_config, AppConfig)):
+                if isinstance(app_config, type) and issubclass(
+                    app_config, AppConfig
+                ):
                     try:
                         return app_config.settings
                     except AttributeError:
                         app_path = app_config.name
 
-    return app_path + '.settings.AppSettings'
+    return app_path + ".settings.AppSettings"
 
 
 def make_django_settings(static_config, base=BaseDjangoSettings):
-    static_config = {k: StaticValue(v)
-                     for k, v in six.iteritems(static_config)
-                     if k.upper() == k}
-    return type('DjangoSettings', (base,), static_config)
+    static_config = {
+        k: StaticValue(v)
+        for k, v in six.iteritems(static_config)
+        if k.upper() == k
+    }
+    return type("DjangoSettings", (base,), static_config)
 
 
-def load_django_settings(provider, static_config, base=BaseDjangoSettings,
-                         apps=None, name=None):
+def load_django_settings(
+    provider, static_config, base=BaseDjangoSettings, apps=None, name=None
+):
     if isinstance(provider, (list, tuple)):
         provider = FallbackProvider(provider)
     settings_class = make_django_settings(static_config, base)

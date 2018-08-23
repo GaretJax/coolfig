@@ -68,10 +68,10 @@ def test_fallbackprovider():
 
     assert conf.get("FOO") is NOT_PROVIDED
     assert dict(conf.iterprefixed("NOPREFIX_")) == {}
-    assert conf.get('TEST1') == 'value'
-    assert conf.get('TEST2') == 'rightvalue'
+    assert conf.get("TEST1") == "value"
+    assert conf.get("TEST2") == "rightvalue"
     assert dict(conf.iterprefixed("PREFIX_")) == {
-        'PREFIX_ONE': 'foo',
-        'PREFIX_TWO': 'bar',
-        'PREFIX_THREE': 'rightbar',
+        "PREFIX_ONE": "foo",
+        "PREFIX_TWO": "bar",
+        "PREFIX_THREE": "rightbar",
     }
