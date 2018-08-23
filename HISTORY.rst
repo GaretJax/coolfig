@@ -2,6 +2,16 @@
 History
 =======
 
+
+3.0.0 - 2018-08-23
+==================
+
+* Removed explicit support for secrets in favor of ``EnvDirConfig`` and
+  a ``FallbackProvider``.
+* Use `black` and `isort` for formatting.
+* Improved tests coverage
+
+
 2.0.0 - 2018-08-03
 ==================
 
