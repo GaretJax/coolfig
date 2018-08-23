@@ -1,17 +1,17 @@
-import os
 import math
+import os
+
 import pytest
+
+from coolfig import Settings, Value, types
+from coolfig.providers import NOT_PROVIDED, ConfigurationProvider, DictConfig
+from coolfig.schema import BoundValue, DictValue, ImproperlyConfigured, ref
+
 
 try:
     from sqlalchemy.engine import url
 except ImportError:
     url = None
-
-from coolfig.providers import ConfigurationProvider, DictConfig
-from coolfig.providers import NOT_PROVIDED
-from coolfig.schema import BoundValue, ref, DictValue
-from coolfig.schema import ImproperlyConfigured
-from coolfig import types, Value, Settings
 
 
 def test_lazy_callable():

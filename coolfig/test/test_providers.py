@@ -1,11 +1,11 @@
 import os
 
 from coolfig.providers import (
+    NOT_PROVIDED,
     DictConfig,
     EnvConfig,
     EnvDirConfig,
     FallbackProvider,
-    NOT_PROVIDED,
 )
 
 

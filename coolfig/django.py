@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 
-import sys
 import os
+import sys
 
 import six
 
 from . import types
-from .schema import Settings, Value, StaticValue, DictValue
 from .providers import FallbackProvider
+from .schema import DictValue, Settings, StaticValue, Value
 
 
 class BaseDjangoSettings(Settings):

@@ -1,4 +1,4 @@
-from six import with_metaclass, iteritems
+from six import iteritems, with_metaclass
 
 from .providers import NOT_PROVIDED
 

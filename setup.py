@@ -5,7 +5,7 @@ import os
 import re
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 PACKAGE = 'coolfig'

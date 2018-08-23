@@ -1,10 +1,21 @@
 from __future__ import absolute_import
 
-import os
-import types
-import sys
 import contextlib
+import os
+import sys
+import types
+
 import pytest
+
+from coolfig import Settings, Value
+from coolfig.django import (
+    BaseDjangoSettings,
+    load_django_settings,
+    make_django_settings,
+)
+from coolfig.providers import DictConfig
+from coolfig.types import django_db_url
+
 
 try:
     import environ as url
@@ -15,12 +26,6 @@ try:
     from django.apps import AppConfig as DjangoAppConfig
 except ImportError:
     DjangoAppConfig = None
-
-from coolfig.django import BaseDjangoSettings, make_django_settings
-from coolfig.django import load_django_settings
-from coolfig.providers import DictConfig
-from coolfig.types import django_db_url
-from coolfig import Value, Settings
 
 
 @contextlib.contextmanager
