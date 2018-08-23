@@ -10,19 +10,20 @@ Support for working with different sources of configuration values.
     settings = DefaultSettings(
         providers.DictConfig(os.environ, prefix='MYAPP_'))
 """
-from .schema import Value, Settings, computed_value, Dictionary
-from .providers import EnvConfig, DictConfig
 from .django import load_django_settings
+from .providers import DictConfig, EnvConfig, EnvDirConfig
+from .schema import Dictionary, Settings, Value, computed_value
 
 
-__version__ = "3.0.0"
+__version__ = "3.1.0"
 __url__ = "https://github.com/GaretJax/coolfig"
 __all__ = [
-    "Value",
-    "Dictionary",
     "computed_value",
-    "Settings",
-    "EnvConfig",
     "DictConfig",
+    "Dictionary",
+    "EnvConfig",
+    "EnvDirConfig",
     "load_django_settings",
+    "Settings",
+    "Value",
 ]

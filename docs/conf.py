@@ -16,6 +16,9 @@ import os
 import sys
 from datetime import date
 
+import coolfig  # NOQA
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -23,7 +26,6 @@ from datetime import date
 parent = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(parent)
 
-import coolfig  # NOQA
 
 # -- General configuration ------------------------------------------------
 
