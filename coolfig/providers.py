@@ -59,4 +59,26 @@ class EnvDirConfig(ConfigurationProvider):
                     yield (k[len(self._prefix):], self.get(k))
 
 
+class FallbackProvider(ConfigurationProvider):
+    def __init__(self, providers):
+        self._providers = list(providers)
+
+    def get(self, key):
+        for provider in self._providers:
+            value = provider.get(key)
+            if value is not NOT_PROVIDED:
+                break
+        else:
+            value = NOT_PROVIDED
+        return value
+
+    def iterprefixed(self, prefix):
+        seen = set()
+        for provider in self._providers:
+            for k, v in provider.iterprefixed(prefix):
+                if k not in seen:
+                    seen.add(k)
+                    yield k, v
+
+
 EnvConfig = partial(DictConfig, os.environ)

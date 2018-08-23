@@ -7,6 +7,7 @@ import six
 
 from . import types
 from .schema import Settings, Value, StaticValue, DictValue
+from .providers import FallbackProvider
 
 
 class BaseDjangoSettings(Settings):
@@ -86,6 +87,8 @@ def make_django_settings(static_config, base=BaseDjangoSettings):
 
 def load_django_settings(provider, static_config, base=BaseDjangoSettings,
                          apps=None, name=None):
+    if isinstance(provider, (list, tuple)):
+        provider = FallbackProvider(provider)
     settings_class = make_django_settings(static_config, base)
     settings = settings_class(provider)
     settings.install(name)

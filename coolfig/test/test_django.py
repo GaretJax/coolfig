@@ -229,6 +229,32 @@ def test_load_settings():
     assert test_settings.APP_KEY == 'app_val'
 
 
+def test_load_settings_multiple_providers():
+    class AppSettings(Settings):
+        APP_KEY = Value(str)
+        APP2_KEY = Value(str)
+
+    install_module('my_loaded_app.settings', AppSettings=AppSettings)
+
+    providers = [
+        DictConfig({'APP_KEY': 'app_val'}),
+        DictConfig({'APP2_KEY': 'app_val2'}),
+    ]
+    static_config = {
+        'INSTALLED_APPS': [
+            'my_loaded_app',
+        ],
+        'ROOT_URLCONF': 'test.app.urls',
+    }
+    load_django_settings(providers, static_config, name='test_settings')
+
+    import test_settings
+    assert test_settings.INSTALLED_APPS == ['my_loaded_app']
+    assert test_settings.ROOT_URLCONF == 'test.app.urls'
+    assert test_settings.APP_KEY == 'app_val'
+    assert test_settings.APP2_KEY == 'app_val2'
+
+
 @pytest.mark.skipif(url is None, reason='django-environ is not installed')
 def test_db_url():
     val = django_db_url('postgres://user:password@host/database')
