@@ -5,23 +5,29 @@ sudo: false
 env:
   matrix:
     - TOXENV=py27-sqlalchemy
-    - TOXENV=py34-sqlalchemy
-    - TOXENV=pypy19-sqlalchemy
-    - TOXENV=py27-django-dj15
-    - TOXENV=py27-django-dj16
-    - TOXENV=py27-django-dj17
+    - TOXENV=py36-sqlalchemy
+    - TOXENV=pypy2-sqlalchemy
     - TOXENV=py27-django-dj18
-    - TOXENV=py34-django-dj15
-    - TOXENV=py34-django-dj16
-    - TOXENV=py34-django-dj17
-    - TOXENV=py34-django-dj18
-    - TOXENV=pypy19-django-dj15
-    - TOXENV=pypy19-django-dj16
-    - TOXENV=pypy19-django-dj17
-    - TOXENV=pypy19-django-dj18
-    - TOXENV=py27-django-dj14
-    - TOXENV=pypy19-django-dj14
-    - TOXENV=flake8
+    - TOXENV=py27-django-dj19
+    - TOXENV=py27-django-dj110
+    - TOXENV=py27-django-dj111
+    - TOXENV=pypy2-django-dj18
+    - TOXENV=pypy2-django-dj19
+    - TOXENV=pypy2-django-dj110
+    - TOXENV=pypy2-django-dj111
+    - TOXENV=py36-django-dj18
+    - TOXENV=py36-django-dj19
+    - TOXENV=py36-django-dj110
+    - TOXENV=py36-django-dj111
+    - TOXENV=py36-django-dj20
+    - TOXENV=py36-django-dj21
+    - TOXENV=pypy3-django-dj18
+    - TOXENV=pypy3-django-dj19
+    - TOXENV=pypy3-django-dj110
+    - TOXENV=pypy3-django-dj111
+    - TOXENV=pypy3-django-dj20
+    - TOXENV=pypy3-django-dj21
+    - TOXENV=py36-lint
 
 cache:
   directories:
