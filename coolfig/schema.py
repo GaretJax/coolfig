@@ -10,7 +10,7 @@ class ImproperlyConfigured(Exception):
 
 
 class ValueBase(object):
-    def __call__(self, settingsobj, key):
+    def __call__(self, settingsobj, key):  # NOCOV
         raise NotImplementedError
 
 
