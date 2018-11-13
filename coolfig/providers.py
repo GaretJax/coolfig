@@ -1,5 +1,7 @@
 import errno
 import os
+from furl import furl
+import requests
 from functools import partial
 
 
@@ -80,6 +82,33 @@ class FallbackProvider(ConfigurationProvider):
                 if k not in seen:
                     seen.add(k)
                     yield k, v
+
+
+class VaultProvider(DictConfig):
+    def __init__(self, url, path, role, prefix=""):
+        self.furl = furl(url)
+        self.path = path
+        self.role = role
+        self.vault_auth = None
+
+        self.login()
+        super(VaultProvider, self).__init__(self.get_dict(), prefix)
+
+    def login(self):
+        url = self.furl.set(path="/v1/auth/kubernetes/login").url
+        token = open("/run/secrets/kubernetes.io/serviceaccount/token").read()
+        response = requests.post(url, json={"role": self.role, "jwt": token})
+        self.vault_auth = response.json()['auth']
+
+    def get_dict(self):
+        path = "/v1/secret/{}".format(self.path)
+        headers = {"X-Vault-Token": self.vault_auth['client_token']}
+        url = self.furl.set(path=path).url
+        response = requests.get(url, headers=headers)
+        data = {}
+        for key, value in response.json().get('data', {}).items():
+            data[str(key)] = str(value)
+        return data
 
 
 EnvConfig = partial(DictConfig, os.environ)
