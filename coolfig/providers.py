@@ -105,10 +105,8 @@ class VaultProvider(DictConfig):
         headers = {"X-Vault-Token": self.vault_auth['client_token']}
         url = self.furl.set(path=path).url
         response = requests.get(url, headers=headers)
-        data = {}
-        for key, value in response.json().get('data', {}).items():
-            data[str(key)] = str(value)
-        return data
+        data = response.json().get('data', {})
+        return {str(k): str(v) for k, v in data.items()}
 
 
 EnvConfig = partial(DictConfig, os.environ)
