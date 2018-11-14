@@ -1,7 +1,6 @@
 import errno
 import os
-from furl import furl
-import requests
+import hvac
 from functools import partial
 
 
@@ -62,6 +61,16 @@ class EnvDirConfig(ConfigurationProvider):
                     yield (k[len(self._prefix) :], self.get(k))
 
 
+class VaultProvider(DictConfig):
+    def __init__(self, url, path, role, prefix=""):
+        token = open("/run/secrets/kubernetes.io/serviceaccount/token").read()
+        self.client = hvac.Client(url=url)
+        self.auth = self.client.auth_kubernetes(role, token)
+        secret = self.client.read('secret/{}'.format(path))
+        config = {str(k): str(v) for k, v in secret["data"].items()}
+        super(VaultProvider, self).__init__(config, prefix)
+
+
 class FallbackProvider(ConfigurationProvider):
     def __init__(self, providers):
         self._providers = list(providers)
@@ -82,31 +91,6 @@ class FallbackProvider(ConfigurationProvider):
                 if k not in seen:
                     seen.add(k)
                     yield k, v
-
-
-class VaultProvider(DictConfig):
-    def __init__(self, url, path, role, prefix=""):
-        self.furl = furl(url)
-        self.path = path
-        self.role = role
-        self.vault_auth = None
-
-        self.login()
-        super(VaultProvider, self).__init__(self.get_dict(), prefix)
-
-    def login(self):
-        url = self.furl.set(path="/v1/auth/kubernetes/login").url
-        token = open("/run/secrets/kubernetes.io/serviceaccount/token").read()
-        response = requests.post(url, json={"role": self.role, "jwt": token})
-        self.vault_auth = response.json()['auth']
-
-    def get_dict(self):
-        path = "/v1/secret/{}".format(self.path)
-        headers = {"X-Vault-Token": self.vault_auth['client_token']}
-        url = self.furl.set(path=path).url
-        response = requests.get(url, headers=headers)
-        data = response.json().get('data', {})
-        return {str(k): str(v) for k, v in data.items()}
 
 
 EnvConfig = partial(DictConfig, os.environ)
